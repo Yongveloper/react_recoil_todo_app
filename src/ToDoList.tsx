@@ -41,6 +41,7 @@ interface IFrom {
   userName: string;
   password: string;
   password1: string;
+  extraError?: string;
 }
 
 function ToDoList() {
@@ -48,13 +49,21 @@ function ToDoList() {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<IFrom>({
     defaultValues: {
       email: '@naver.com',
     },
   });
-  const onValid = (data: any) => {
-    console.log(data);
+  const onValid = (data: IFrom) => {
+    if (data.password !== data.password1) {
+      setError(
+        'password1',
+        { message: 'Password are not the same' },
+        { shouldFocus: true }
+      );
+    }
+    // setError('extraError', { message: 'Server offline.' });
   };
   console.log(errors);
   return (
@@ -76,7 +85,13 @@ function ToDoList() {
         />
         <span>{errors?.email?.message}</span>
         <input
-          {...register('firstName', { required: 'Write here' })}
+          {...register('firstName', {
+            required: 'Write here',
+            validate: {
+              noYong: (value) => !value.includes('yong') || 'no yong allowed',
+              noNick: (value) => !value.includes('nick') || 'no nick allowed',
+            },
+          })}
           type="text"
           placeholder="First Name"
         />
@@ -94,14 +109,12 @@ function ToDoList() {
           placeholder="Username"
         />
         <span>{errors?.userName?.message}</span>
-
         <input
           {...register('password', { required: 'Write here', minLength: 5 })}
           type="password"
           placeholder="Password"
         />
         <span>{errors?.password?.message}</span>
-
         <input
           {...register('password1', {
             required: 'Password is required',
@@ -115,6 +128,7 @@ function ToDoList() {
         />
         <span>{errors?.password1?.message}</span>
         <button>Add</button>
+        <span>{errors?.extraError?.message}</span>
       </form>
     </div>
   );
