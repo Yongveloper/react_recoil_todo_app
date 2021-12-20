@@ -1,134 +1,26 @@
-import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-// function ToDoList() {
-//   const [toDo, setToDo] = useState('');
-//   const [toDoError, setToDoError] = useState('');
-//   const onChange = (event: React.FormEvent<HTMLInputElement>) => {
-//     const {
-//       currentTarget: { value },
-//     } = event;
-//     setToDoError('');
-//     setToDo(value);
-//   };
-//   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-//     event.preventDefault();
-//     if (toDo.length < 10) {
-//       return setToDoError('To do should be longer');
-//     }
-//     console.log('submit');
-//   };
-//   return (
-//     <div>
-//       <form onSubmit={onSubmit}>
-//         <input
-//           onChange={onChange}
-//           value={toDo}
-//           type="text"
-//           placeholder="Write a to do"
-//         />
-//         <button>Add</button>
-//         {toDoError !== '' ? toDoError : null}
-//       </form>
-//     </div>
-//   );
-// }
-
-interface IFrom {
-  email: string;
-  firstName: string;
-  last_Name: string;
-  userName: string;
-  password: string;
-  password1: string;
-  extraError?: string;
+interface IForm {
+  toDo: string;
 }
 
 function ToDoList() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError,
-  } = useForm<IFrom>({
-    defaultValues: {
-      email: '@naver.com',
-    },
-  });
-  const onValid = (data: IFrom) => {
-    if (data.password !== data.password1) {
-      setError(
-        'password1',
-        { message: 'Password are not the same' },
-        { shouldFocus: true }
-      );
-    }
-    // setError('extraError', { message: 'Server offline.' });
+  const { register, handleSubmit, setValue } = useForm<IForm>();
+  const handleValid = (data: IForm) => {
+    console.log('add to do', data.toDo);
+    setValue('toDo', '');
   };
-  console.log(errors);
   return (
     <div>
-      <form
-        style={{ display: 'flex', flexDirection: 'column' }}
-        onSubmit={handleSubmit(onValid)}
-      >
+      <form onSubmit={handleSubmit(handleValid)}>
         <input
-          {...register('email', {
-            required: 'Email is Required',
-            pattern: {
-              value: /^[A-Za-z0-9._%+-]+@naver.com$/,
-              message: 'Only naver.com emails allowed',
-            },
-          })}
-          type="email"
-          placeholder="Email"
-        />
-        <span>{errors?.email?.message}</span>
-        <input
-          {...register('firstName', {
-            required: 'Write here',
-            validate: {
-              noYong: (value) => !value.includes('yong') || 'no yong allowed',
-              noNick: (value) => !value.includes('nick') || 'no nick allowed',
-            },
+          {...register('toDo', {
+            required: 'Please write a To Do',
           })}
           type="text"
-          placeholder="First Name"
+          placeholder="Write a to do"
         />
-        <span>{errors?.firstName?.message}</span>
-        <input
-          {...register('last_Name', { required: 'Write here' })}
-          type="text"
-          placeholder="Last Name"
-        />
-        <span>{errors?.last_Name?.message}</span>
-
-        <input
-          {...register('userName', { required: 'Write here', minLength: 10 })}
-          type="text"
-          placeholder="Username"
-        />
-        <span>{errors?.userName?.message}</span>
-        <input
-          {...register('password', { required: 'Write here', minLength: 5 })}
-          type="password"
-          placeholder="Password"
-        />
-        <span>{errors?.password?.message}</span>
-        <input
-          {...register('password1', {
-            required: 'Password is required',
-            minLength: {
-              value: 5,
-              message: 'Your password is too short',
-            },
-          })}
-          type="password"
-          placeholder="Password1"
-        />
-        <span>{errors?.password1?.message}</span>
         <button>Add</button>
-        <span>{errors?.extraError?.message}</span>
       </form>
     </div>
   );
