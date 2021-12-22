@@ -4,7 +4,7 @@ import { Categories, IToDo, toDoState } from '../atom';
 
 function ToDo({ text, category, id }: IToDo) {
   const setToDos = useSetRecoilState(toDoState);
-  const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCategory = (event: React.MouseEvent<HTMLButtonElement>) => {
     const {
       currentTarget: { name },
     } = event;
@@ -20,24 +20,33 @@ function ToDo({ text, category, id }: IToDo) {
       return newToDos;
     });
   };
+  const handleRemove = () => {
+    setToDos((oldToDos) => {
+      const filterdToDos = oldToDos.filter((toDo) => toDo.id !== id);
+      localStorage.setItem('toDos', JSON.stringify(filterdToDos));
+      return filterdToDos;
+    });
+  };
+
   return (
     <li>
       <span>{text}</span>
       {category !== Categories.DOING && (
-        <button name={Categories.DOING + ''} onClick={onClick}>
+        <button name={Categories.DOING + ''} onClick={handleCategory}>
           Doing
         </button>
       )}
       {category !== Categories.TO_DO && (
-        <button name={Categories.TO_DO + ''} onClick={onClick}>
+        <button name={Categories.TO_DO + ''} onClick={handleCategory}>
           ToDo
         </button>
       )}
       {category !== Categories.DONE && (
-        <button name={Categories.DONE + ''} onClick={onClick}>
+        <button name={Categories.DONE + ''} onClick={handleCategory}>
           Done
         </button>
       )}
+      <button onClick={handleRemove}>❌</button>
     </li>
   );
 }
